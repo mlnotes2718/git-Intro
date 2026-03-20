@@ -1,0 +1,2 @@
+This is my first text file tracked by Git.
+Git records every change I make to this file.
