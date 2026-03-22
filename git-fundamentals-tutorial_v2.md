@@ -201,6 +201,8 @@ bmi-project/
 ├── guides/. # various guide related to git including a textbook
 │   ├── ...
 │   └── progit.pdf
+├── logs/
+│   └── .gitkeep
 ├── src/
 │   └── .gitkeep
 ├── tests/
@@ -747,6 +749,8 @@ bmi-project/
 ├── guides/. # various guide related to git including a textbook
 │   ├── ...
 │   └── progit.pdf
+├── logs/
+│   └── .gitkeep
 ├── src/
 │   └── .gitkeep
 ├── tests/
@@ -1336,7 +1340,7 @@ The bug is back on `main`. The log now looks something like:
 git log --oneline
 # 282f48e (HEAD -> main, origin/main, origin/HEAD) Merge pull request #4 from mlnotes2718:feature/imperial-broken
 # e5d47b4 feat: add imperial input — WIP (contains bug)
-# 1769981 (tag: v1.0) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
+# 1769981 (tag: v1.0.0) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
 # ab87070 feat: add BMI calculator with kg input and category labels
 ```
 
@@ -1349,37 +1353,19 @@ You have a release tag `v1.0.0` pointing at the last known-good commit. Use `git
 ```bash
 # Revert all commits after v1.0 back to HEAD
 # -m 1 is required because the range includes merge commits
-git revert -m 1 v1.0.0..HEAD --no-edit
+git revert --no-commit -m 1 v1.0.0..HEAD
 ```
-
-You might get the following response:
-```text
-[main c7d0d18] Revert "Merge pull request #4 from mlnotes2718:feature/imperial-broken"
- Date: Wed Mar 18 12:13:14 2026 +0800
- 1 file changed, 25 insertions(+), 10 deletions(-)
-On branch main
-Your branch is ahead of 'origin/main' by 1 commit.
-  (use "git push" to publish your local commits)
-
-Revert currently in progress.
-  (run "git revert --continue" to continue)
-  (use "git revert --skip" to skip this patch)
-  (use "git revert --abort" to cancel the revert operation)
-
-nothing to commit, working tree clean
-```
-
-If Git pauses after the first revert because there is nothing left to undo for the next commit, run:
 
 ```bash
-git revert --continue
+# Set your reason to revert
+git commit -m "Rollback to tag v1.0.0: [Error was introduced in lb computation, reverting to stable version]"
 ```
 
 ### Verify the revert worked
 
 ```bash
 git log --oneline
-# c7d0d18 (HEAD -> main) Revert "Merge pull request #4 from mlnotes2718:feature/imperial-broken"
+# c7d0d18 (HEAD -> main) Rollback to tag v1.0.0: [Error was introduced in lb computation, reverting to stable version]
 # 282f48e (origin/main, origin/HEAD) Merge pull request #4 from mlnotes2718:feature/imperial-broken
 # e5d47b4 feat: add imperial input — WIP (contains bug)
 # 1769981 (tag: v1.0) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
@@ -1404,7 +1390,31 @@ No force-push needed — `git revert` only adds new commits, it never rewrites h
 git push
 ```
 
-> 💡 **This is the power of tags.** Without `v1.0`, you would have had to scroll through `git log` to find the right hash. With a tag, you say exactly what you mean: "revert everything back to the v1.0 release." The history is fully preserved — the bug, the revert, and the reason are all visible to your team.
+### Troubleshoot
+You might get the following response:
+```text
+[main c7d0d18] Revert "Merge pull request #4 from mlnotes2718:feature/imperial-broken"
+ Date: Wed Mar 18 12:13:14 2026 +0800
+ 1 file changed, 25 insertions(+), 10 deletions(-)
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Revert currently in progress.
+  (run "git revert --continue" to continue)
+  (use "git revert --skip" to skip this patch)
+  (use "git revert --abort" to cancel the revert operation)
+
+nothing to commit, working tree clean
+```
+
+If Git pauses after the first revert because there is nothing left to undo for the next commit, run:
+
+```bash
+git revert --continue
+```
+
+> 💡 **This is the power of tags.** Without `v1.0.0`, you would have had to scroll through `git log` to find the right hash. With a tag, you say exactly what you mean: "revert everything back to the v1.0.0 release." The history is fully preserved — the bug, the revert, and the reason are all visible to your team.
 
 ---
 
