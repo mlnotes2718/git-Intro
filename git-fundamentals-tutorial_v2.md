@@ -194,7 +194,7 @@ The downloaded repo may include a `docs` folder with example content. Delete the
 rm -rf docs
 ```
 
-Your project should now look like this:
+Your project should now look similar to this:
 
 ```
 bmi-project/
@@ -214,6 +214,8 @@ bmi-project/
 └── README.md
 └── uv.lock
 ```
+
+> Some additional files not listed above are beyond the scope of this tutorial. You can ignore them for now.
 
 ---
 
@@ -593,10 +595,10 @@ git log --oneline
 Example output:
 
 ```
-0fb084b (HEAD -> main, origin/main) chore: ignore secrets.json
-8248407 docs: add mytext.txt with personal notes
-cd5c822 chore: add docs folder with .gitkeep
-c8973be chore: initial project setup with README and gitignore
+597905a (HEAD -> main, origin/main, origin/HEAD) chore: ignore secrets.json
+9b21e34 docs: add mytext.txt with personal notes
+9a238ed chore: add docs folder with .gitkeep
+3de1c52 chore: initial project setup with README and gitignore
 ```
 
 Each line shows:
@@ -763,6 +765,7 @@ bmi-project/
 └── uv.lock
 ```
 
+> Some additional files not listed above are beyond the scope of this tutorial. You can ignore them for now.
 
 Run the following command to install the files:
 
@@ -1008,10 +1011,10 @@ Check the log to see where you are:
 
 ```bash
 git log --oneline
-# c15d10c (HEAD -> main, origin/main, origin/HEAD) Merge pull request #2 from mlnotes2718:feature/bmi-imperial
-# df740aa feat: add imperial (pounds) input support
-# 1769981 Merge pull request #1 from mlnotes2718/feature/bmi-calculator
-# ab87070 feat: add BMI calculator with kg input and category labels
+# 05126d6 (HEAD -> main, origin/main, origin/HEAD) Merge pull request #2 from mlnotes2718:feature/bmi-imperial
+# 047dac5 feat: add imperial (pounds) input support
+# 6ffb562 Merge pull request #1 from mlnotes2718/feature/bmi-calculator
+# 05be810 feat: add BMI calculator with kg input and category labels
 # ...
 ```
 
@@ -1040,11 +1043,11 @@ Check the log:
 
 ```bash
 git log --oneline
-# f07bdf2 (HEAD -> main, origin/main, origin/HEAD) Revert "Merge pull request #2 from mlnotes2718:feature/bmi-imperial"
-# c15d10c Merge pull request #2 from mlnotes2718:feature/bmi-imperial
-# df740aa feat: add imperial (pounds) input support
-# 1769981 Merge pull request #1 from mlnotes2718/feature/bmi-calculator
-# ab87070 feat: add BMI calculator with kg input and category labels
+# 4d3c8bd (HEAD -> main, origin/main, origin/HEAD) Revert "Merge pull request #2 from mlnotes2718:feature/bmi-imperial"
+# 05126d6 Merge pull request #2 from mlnotes2718:feature/bmi-imperial
+# 047dac5 feat: add imperial (pounds) input support
+# 6ffb562 Merge pull request #1 from mlnotes2718/feature/bmi-calculator
+# 05be810 feat: add BMI calculator with kg input and category labels
 # ...
 ```
 
@@ -1130,14 +1133,14 @@ Check the log:
 
 ```bash
 git log --oneline
-# f538ef4 (HEAD -> main, origin/main, origin/HEAD) Merge pull request #3 from mlnotes2718:feature/bmi-imperial-v2
-# 72cdaff feat: update output message for pounds input
-# d8edaa7 refactor: rename parameter to weight_lb
-# f07bdf2 Revert "Merge pull request #2 from mlnotes2718:feature/bmi-imperial"
-# c15d10c Merge pull request #2 from mlnotes2718:feature/bmi-imperial
-# df740aa feat: add imperial (pounds) input support
-# 1769981 Merge pull request #1 from mlnotes2718/feature/bmi-calculator
-# ab87070 feat: add BMI calculator with kg input and category labels
+# af55440 (HEAD -> main, origin/main, origin/HEAD) Merge pull request #3 from mlnotes2718:feature/bmi-imperial-v2
+# a7371cc feat: update output message for pounds input
+# cd78540 refactor: rename parameter to weight_lb
+# 4d3c8bd Revert "Merge pull request #2 from mlnotes2718:feature/bmi-imperial"
+# 05126d6 Merge pull request #2 from mlnotes2718:feature/bmi-imperial
+# 047dac5 feat: add imperial (pounds) input support
+# 6ffb562 Merge pull request #1 from mlnotes2718/feature/bmi-calculator
+# 05be810 feat: add BMI calculator with kg input and category labels
 # ...
 ```
 
@@ -1155,18 +1158,18 @@ From the log above, the last good commit is `1769981` (the original BMI calculat
 
 ```bash
 # --hard erases the commits and all the file changes
-git reset --hard 1769981
+git reset --hard 6ffb562
 ```
 
-Replace `1769981` with the actual hash from your log.
+Replace `6ffb562` with the actual hash from your log.
 
 Verify:
 
 ```bash
 git log --oneline
-# 1769981 (HEAD -> main) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
-# ab87070 feat: add BMI calculator with kg input and category labels
-# c5c0a62 docs: Update mytext.txt
+# 6ffb562 (HEAD -> main) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
+# 05be810 feat: add BMI calculator with kg input and category labels
+# e598917 docs: Update mytext.txt online via Browser
 # ...
 ```
 
@@ -1318,7 +1321,35 @@ git pull
 git switch -c feature/imperial-broken
 ```
 
-Open `src/main.py` and replace the full content with the buggy version from Step 18 (pounds input, no conversion). Then:
+Open `src/main.py` and replace the full content with the buggy version from Step 18 (pounds input, no conversion). 
+
+```python
+# src/main.py  ← BUGGY VERSION
+
+def calculate_bmi(weight_lb: float, height_m: float) -> float:
+    """
+    BUG: parameter says lb but we forget to convert lb → kg.
+    The formula receives the wrong unit and silently produces a wrong answer.
+    """
+    bmi = weight_lb / (height_m ** 2)   # ← weight_lb used directly — WRONG
+    return round(bmi, 2)
+
+
+def bmi_category(bmi: float) -> str:
+    if bmi < 18.5:   return "Underweight"
+    elif bmi < 25.0: return "Normal weight"
+    elif bmi < 30.0: return "Overweight"
+    else:            return "Obese"
+
+
+if __name__ == "__main__":
+    weight = float(input("Enter your weight in pounds: "))
+    height = float(input("Enter your height in metres: "))
+    bmi = calculate_bmi(weight, height)
+    print(f"Your BMI is {bmi} — {bmi_category(bmi)}")
+```
+
+Then:
 
 ```bash
 git add src/main.py
@@ -1338,10 +1369,11 @@ The bug is back on `main`. The log now looks something like:
 
 ```bash
 git log --oneline
-# 282f48e (HEAD -> main, origin/main, origin/HEAD) Merge pull request #4 from mlnotes2718:feature/imperial-broken
-# e5d47b4 feat: add imperial input — WIP (contains bug)
-# 1769981 (tag: v1.0.0) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
-# ab87070 feat: add BMI calculator with kg input and category labels
+# dc42e9e (HEAD -> main, origin/main, origin/HEAD) Merge pull request #4 from mlnotes2718:feature/imperial-broken
+# 7722230 feat: add imperial input — WIP (contains bug)
+# 6ffb562 (tag: v1.0.0) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
+# 05be810 feat: add BMI calculator with kg input and category labels
+# ...
 ```
 
 ---
@@ -1365,11 +1397,12 @@ git commit -m "Rollback to tag v1.0.0: [Error was introduced in lb computation, 
 
 ```bash
 git log --oneline
-# c7d0d18 (HEAD -> main) Rollback to tag v1.0.0: [Error was introduced in lb computation, reverting to stable version]
-# 282f48e (origin/main, origin/HEAD) Merge pull request #4 from mlnotes2718:feature/imperial-broken
-# e5d47b4 feat: add imperial input — WIP (contains bug)
-# 1769981 (tag: v1.0) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
-# ab87070 feat: add BMI calculator with kg input and category labels
+# 0110e24 (HEAD -> main) Rollback to tag v1.0.0: [Error was introduced in lb computation, reverting to stable version]
+# dc42e9e (origin/main, origin/HEAD) Merge pull request #4 from mlnotes2718:feature/imperial-broken
+# 7722230 feat: add imperial input — WIP (contains bug)
+# 6ffb562 (tag: v1.0.0) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
+# 05be810 feat: add BMI calculator with kg input and category labels
+# ...
 
 uv run python src/main.py
 # Enter your weight in kg: 70 → 22.86 — Normal weight  ✓
@@ -1647,11 +1680,12 @@ Click **Publish release**.
 
 ```bash
 git log --oneline
-# 01520c7 (origin/fix/imperial-with-tests) fix: correct lb→kg conversion; add tests for imperial input
-# c7d0d18 Revert "Merge pull request #4 from mlnotes2718:feature/imperial-broken"
-# 282f48e Merge pull request #4 from mlnotes2718:feature/imperial-broken
-# e5d47b4 feat: add imperial input — WIP (contains bug)
-# 1769981 (tag: v1.0) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
+# a15f6fe (HEAD -> main, tag: v1.0.1, origin/main, origin/HEAD) Merge pull request #5 from mlnotes2718:fix/imperial-with-tests
+# 05a24a6 fix: correct lb→kg conversion; add tests for imperial input
+# 0110e24 Rollback to tag v1.0.0: [Error was introduced in lb computation, reverting to stable version]
+# dc42e9e Merge pull request #4 from mlnotes2718:feature/imperial-broken
+# 7722230 feat: add imperial input — WIP (contains bug)
+# 6ffb562 (tag: v1.0.0) Merge pull request #1 from mlnotes2718/feature/bmi-calculator
 # ...
 ```
 

@@ -281,5 +281,5 @@ $RECYCLE.BIN/
 # Ignore specific logs and reports
 gitleaks_report.csv
 
-# git-Intro tutorial, place secrets.json under this comment
+# git-Intro tutorial, place the secret json file after this comment
 secrets.json
